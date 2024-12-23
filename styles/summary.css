@@ -92,7 +92,6 @@
 }
 
 .summary-card:hover {
-  scale: 1.1;
   background-color: #2a3647;
   color: #ffffff;
 }
@@ -107,7 +106,6 @@
 }
 
 .summary-card-small:hover {
-  scale: 1.1;
   background-color: #2a3647;
   color: #ffffff;
 }
@@ -124,7 +122,6 @@
 }
 
 .summary-card-big:hover {
-  scale: 1.1;
   background-color: #2a3647;
   color: #ffffff;
 }

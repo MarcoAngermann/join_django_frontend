@@ -10,7 +10,7 @@ function showBoardAddTask(boardStatus) {
   let content = document.getElementById("boardAddTask");
   content.innerHTML = "";
   content.innerHTML = renderBoardAddTaskHTML(boardStatus);
-  renderContacts();
+  renderUsers();
   renderCategorys();
   restrictPastDate();
 }
@@ -102,11 +102,12 @@ window.onload = function () {
  * Renders the list of users by appending their HTML representation to the 'users' element.
  * @return {void} This function does not return a value.
  */
-function renderContacts() {
+function renderUsers() {
   let content = document.getElementById("users");
-  for (let i = 0; i < contacts.length; i++) {
-    const contact = contacts[i];
-    content.innerHTML += renderContactsHTML(contact, i);
+  for (let i = 0; i < users.length; i++) {
+    const user = users[i];
+    if (user.username == "guest") continue;
+    content.innerHTML += renderUsersHTML(user, i);
   }
 }
 
@@ -180,20 +181,21 @@ function showUsersEmblem() {
   usersEmblem.innerHTML = "";
   let renderedCount = 0;
   let extraCount = 0;
-  for (let i = 0; i < contacts.length; i++) {
-    let contact = contacts[i];
-    let contactListChecked = document.getElementById("contactList" + i);
-    let checkedContact = document.getElementById(`checkbox${i}`);
-    if (checkedContact.checked == true) {
-      contactListChecked.classList.add("contactlist-selected");
+  for (let i = 0; i < users.length; i++) {
+    let user = users[i];
+    if(user.username = "guest") continue;
+    let userListChecked = document.getElementById("contactList" + i);
+    let checkedUser = document.getElementById(`checkbox${i}`);
+    if (checkedUser.checked == true) {
+      userListChecked.classList.add("contactlist-selected");
       if (renderedCount < 5) {
-        usersEmblem.innerHTML += renderEmblemUsers(contact);
+        usersEmblem.innerHTML += renderEmblemUsers(user);
         renderedCount++;
       } else {
         extraCount++;
       }
     } else {
-      contactListChecked.classList.remove("contactlist-selected");
+      userListChecked.classList.remove("contactlist-selected");
     }
   }
   if (extraCount > 0) {
@@ -251,22 +253,21 @@ function getSelectedPrio() {
  * Retrieves the IDs of all selected checkboxes in the contact list.
  * @return {Array<string>} An array of selected user IDs.
  */
-function getSelectedContactIds() {
+function getSelectedUserIds() {
   let checkboxes = document.querySelectorAll(
     '.contactlist input[type="checkbox"]:checked'
   );
-  let selectedContactIds = [];
+  let selectedUserIds = [];
   for (let checkbox of checkboxes) {
-    let contactId = +checkbox.getAttribute("data-userid");
-    contact = contacts.find((c) => c.id === contactId);
-    if (contact) {
-      contact.checked = true;
-      selectedContactIds.push(contact.id);
+    let userId = +checkbox.getAttribute("data-userid");
+    user = users.find((u) => u.id === userId);
+    if (user) {
+      selectedUserIds.push(user.id);
     } else {
-      console.error(`Kontakt mit ID ${contactId} nicht gefunden.`);
+      console.error(`Kontakt mit ID ${userId} nicht gefunden.`);
     }
   }
-  return selectedContactIds;
+  return selectedUserIds;
 }
 
 /**
@@ -292,11 +293,11 @@ async function createNewTaskBoard(boardStatus, event) {
     categoryErrorMessage.innerHTML = "Please select a category";
     return;
   }
-  let selectedContactIds = getSelectedContactIds();
+  let selectedUserIds = getSelectedUserIds();
   let task = {
     title: document.getElementById("title").value,
     description: document.getElementById("description").value,
-    contact_ids: selectedContactIds, // Ändere dies von "contacts" zu "contact_ids"
+    user_ids: selectedUserIds,
     date: document.getElementById("date").value,
     priority: getSelectedPrio(),
     category: selectedCategory,
@@ -307,7 +308,7 @@ async function createNewTaskBoard(boardStatus, event) {
   taskAddedToBoard();
   setTimeout(async function () {
     resetUserDisplay();
-    await postData("tasks", task);
+    await postData("tasks", task, true);
     clearAllTasks(event);
     closeAddTaskBoard();
     updateHTML();

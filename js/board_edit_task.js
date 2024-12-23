@@ -12,7 +12,7 @@ function editTaskOfBoard(cardId) {
     cardId: cardId,
     category: task.category,
     date: task.date,
-    contacts: task.contacts,
+    user: task.user,
     description: task.description,
     priority: task.priority,
     status: task.status,
@@ -45,7 +45,7 @@ function renderInformation(cardId) {
   document.getElementById('editDescription').value = task.description;
   document.getElementById('editDate').value = task.date;
   editTogglePriority(task.priority);
-  renderEditContacts();
+  renderEditUsers();
   restrictEditPastDate();
   showPickedUsersEmblems(cardId);
   renderEditSubtask(task.subtasks);
@@ -226,12 +226,12 @@ function restrictEditPastDate() {
  * Renders the edit users by appending their HTML representation to the 'editUsers' element.
  * @return {void} This function does not return a value.
  */
-function renderEditContacts() {
+function renderEditUsers() {
   let content = document.getElementById('editUsers');
-
-  for (let i = 0; i < contacts.length; i++) {
-    const contact = contacts[i];
-    content.innerHTML += renderEditContactsHTML(contact, i);
+  for (let i = 0; i < users.length; i++) {
+    const user = users[i];
+    if(user.id ==1) continue;
+    content.innerHTML += renderEditUsersHTML(user, i);
   }
 }
 
@@ -250,9 +250,9 @@ function showPickedUsersEmblems(cardId) {
   let extraCount = 0;
   const task = tasks.find((t) => t.cardId == cardId);
   if (task && task.cardId) {
-    for (let contact of task.contacts) {
-      if (contact && contact.checked && renderedCount < 5) {
-        editUsersEmblem.innerHTML += renderEditEmblemContacts(contact);
+    for (let user of task.user) {
+      if (user && user.checked && renderedCount < 5) {
+        editUsersEmblem.innerHTML += renderEditEmblemUsers(user.user);
         renderedCount++;
       } else {
         extraCount++;
@@ -281,20 +281,21 @@ function showEditUsersEmblem() {
   usersEmblem.innerHTML = '';
   let renderedCount = 0;
   let extraCount = 0;
-  for (let i = 0; i < contacts.length; i++) {
-    let contact = contacts[i];
-    let contactListChecked = document.getElementById('edit-contactlist' + i);
-    let checkedContact = document.getElementById(`editCheckbox${i}`);
-    if (checkedContact.checked == true) {
-      contactListChecked.classList.add('edit-contactlist-selected');
+  for (let i = 0; i < users.length; i++) {
+    let user = users[i];
+    if(user.id ==1) continue;
+    let userListChecked = document.getElementById('edit-contactlist' + i);
+    let checkedUser = document.getElementById(`editCheckbox${i}`);
+    if (checkedUser.checked == true) {
+      userListChecked.classList.add('edit-contactlist-selected');
       if (renderedCount < 5) {
-        usersEmblem.innerHTML += renderEditEmblemContacts(contact);
+        usersEmblem.innerHTML += renderEditEmblemUsers(user);
         renderedCount++;
       } else {
         extraCount++;
       }
     } else {
-      contactListChecked.classList.remove('edit-contactlist-selected');
+      userListChecked.classList.remove('edit-contactlist-selected');
     }
   }
   if (extraCount > 0) {
@@ -327,14 +328,15 @@ function checkUserCheckboxesBasedOnEmblems() {
  * @return {void} This function does not return a value.
  */
 function updateContactListSelection() {
-  for (let i = 0; i < contacts.length; i++) {
-    let contact = contacts[i];
-    let contactListChecked = document.getElementById('edit-contactlist' + i);
-    let checkedContact = document.getElementById(`editCheckbox${i}`);
-    if (checkedContact.checked) {
-      contactListChecked.classList.add('edit-contactlist-selected');
+  for (let i = 0; i < users.length; i++) {
+    let user = users[i];
+    if(user.id ==1) continue;
+    let userListChecked = document.getElementById('edit-contactlist' + i);
+    let checkedUser = document.getElementById(`editCheckbox${i}`);
+    if (checkedUser.checked) {
+      userListChecked.classList.add('edit-contactlist-selected');
     } else {
-      contactListChecked.classList.remove('edit-contactlist-selected');
+      userListChecked.classList.remove('edit-contactlist-selected');
     }
   }
 }
@@ -343,22 +345,21 @@ function updateContactListSelection() {
  * Retrieves the IDs of all selected checkboxes in the contact list.
  * @return {Array<string>} An array of selected user IDs.
  */
-function getSelectedContactIds() {
+function getEditSelectedUserIds() {
   let checkboxes = document.querySelectorAll(
     '.edit-contactlist input[type="checkbox"]:checked'
   );
-  let selectedContactIds = [];
+  let selectedUserIds = [];
   for (let checkbox of checkboxes) {
-    let contactId = +checkbox.getAttribute("data-userid");
-    contact = contacts.find((c) => c.id === contactId);
-    if (contact) {
-      contact.checked = true;
-      selectedContactIds.push(contact.id);
+    let userId = +checkbox.getAttribute("data-userid");
+    user = users.find((u) => u.id === userId);
+    if (user) {
+      selectedUserIds.push(user.id);
     } else {
-      console.error(`Kontakt mit ID ${contactId} nicht gefunden.`);
+      console.error(`Kontakt mit ID ${userId} nicht gefunden.`);
     }
   }
-  return selectedContactIds;
+  return selectedUserIds;
 }
 
 /**
@@ -369,11 +370,11 @@ function getSelectedContactIds() {
  */
 async function editTask(cardId, event) {
   event.preventDefault();
-  let selectedContactIds = getSelectedContactIds();
+  let selectedUserIds = getEditSelectedUserIds();
   let updatedTask = {
     title: document.getElementById('editTitle').value,
     description: document.getElementById('editDescription').value,
-    contact_ids: selectedContactIds, // Ändere dies von "contacts" zu "contact_ids"
+    user_ids: selectedUserIds,
     date: document.getElementById('editDate').value,
     priority: getEditSelectedPrio(),
     category: boardEdit[0].category,
@@ -400,7 +401,7 @@ async function updateEditBoard(cardId, updatedTask) {
   for (let key in tasksJSON) {
     let task = tasksJSON[key];
     if (task.cardId == cardId) {
-      await patchData(`tasks/${task.cardId}`, updatedTask);
+      await putData(`tasks/${task.cardId}`, updatedTask);
     }
   }
 }

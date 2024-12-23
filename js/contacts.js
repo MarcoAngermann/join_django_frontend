@@ -24,13 +24,15 @@ async function newContact(event) {
     email: document.getElementById("emailContact").value,
     phone: document.getElementById("phoneContact").value,
     emblem: renderEmblem(nameContact),
-    color: colorRandom(),
-    checked: false
+    color: colorRandom()
   };
   contacts.push(newContact);
-  await postData("contacts", newContact);
+  await postData("contacts", newContact, true);
   showNewContactDetails(newContact);
   console.log(newContact);
+  window.onload = function() {
+    document.getElementById('meinElement').innerHTML = 'Seite geladen!';
+};
 }
 
 /**
@@ -48,7 +50,7 @@ async function editContact(event, i) {
   contactEdit["emblem"] = renderEmblem(
     document.getElementById("nameContact").value
   );
-  await firebaseUpdate(contactEdit);
+  await putData(`contacts/${contactEdit.id}`, contactEdit, true);
   closeDialog();
   cleanContactControls();
   renderListContact();
@@ -66,45 +68,13 @@ async function deleteContact(i) {
   let contactDelete = contacts[i];
   contacts.splice(i, 1);
   document.getElementById("divDetails").innerHTML = "";
-  await firebaseDelete(contactDelete);
+  try {
+    await deleteData(`contacts/${contactDelete.id}`, true);
+  } catch (error) {}
   renderListContact();
   if (window.innerWidth <= 710) {
     backMobileContListe();
   }
-}
-
-/**
- * Updates a contact in the Firebase database by finding the contact with the matching contactId
- * and replacing it with the new contact data provided in the contactEdit parameter.
- * @param {Object} contactEdit - The updated contact data to be applied.
- * @return {Promise<void>} A promise that resolves when the contact is successfully updated.
- */
-async function firebaseUpdate(contactEdit) {
-  let contactsJson = await loadData("contacts");
-  for (key in contactsJson) {
-    let contactDB = contactsJson[key];
-    if (contactDB.id == contactEdit.id) {
-      contactId = contactDB.id;
-    }
-  }
-  await patchData(`contacts/${contactId}`, contactEdit);
-}
-
-/**
- * Deletes a contact from the Firebase database by finding the contact with the matching contactId
- * and deleting it.
- * @param {Object} contactDelete - The contact object to be deleted.
- * @return {Promise<void>} A promise that resolves when the contact is successfully deleted.
- */
-async function firebaseDelete(contactDelete) {
-  let contactsJson = await loadData("contacts");
-  for (key in contactsJson) {
-    let contactDB = contactsJson[key];
-    if (contactDB.id == contactDelete.id) {
-      contactId = contactDB.id;
-    }
-  }
-  deleteData(`contacts/${contactId}`);
 }
 
 /**
@@ -128,7 +98,9 @@ function renderEmblem(name) {
  * @return {string} The randomly generated color.
  */
 function colorRandom() {
-  return colors[Math.floor(Math.random() * colors.length)];
+  return `#${Math.floor(Math.random() * 16777215)
+    .toString(16)
+    .padStart(6, "0")}`;
 }
 
 /**
@@ -332,16 +304,30 @@ function backMobileContListe() {
 }
 
 /**
- * Toggles the display of the "mobileMode" element. If the element is currently hidden, it will be displayed as a flex container. If it is already displayed, it will be hidden.
- * @return {void} This function does not return a value.
+ * Toggles the active state and dropdown menu of the mobile contact button.
+ * @param {HTMLElement} button - The button triggering the dropdown toggle.
  */
-function openMobileDialog() {
-  let mobileMode = document.getElementById("amobile_nameContact");
-  if (mobileMode != null) {
-    if (mobileMode.style.display == "none") {
-      mobileMode.style.display = "flex";
-    } else {
+function toggleActive(button) {
+  const mobileMode = document.getElementById("amobile_nameContact");
+  if (!mobileMode) return;
+  button.classList.toggle("active");
+  mobileMode.style.display = button.classList.contains("active")
+    ? "flex"
+    : "none";
+
+  function handleOutsideClick(event) {
+    if (!button.contains(event.target) && !mobileMode.contains(event.target)) {
+      button.classList.remove("active");
       mobileMode.style.display = "none";
+      document.removeEventListener("click", handleOutsideClick);
     }
+  }
+
+  if (button.classList.contains("active")) {
+    setTimeout(() => {
+      document.addEventListener("click", handleOutsideClick);
+    }, 0);
+  } else {
+    document.removeEventListener("click", handleOutsideClick);
   }
 }

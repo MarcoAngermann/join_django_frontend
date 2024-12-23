@@ -47,12 +47,13 @@
 
 .empty-board {
   display: flex;
+  justify-content: center;
   height: 48px;
+  width: 240px;
   width: 100%;
   border-radius: 10px;
   border: 1px dashed #a8a8a8;
-  justify-content: center;
-  align-items: center;
+  text-align: center;  align-items: center;
   color: #b5b4b4;
   background-color: rgba(0, 0, 0, 0.05);
   border-radius: 10px;
@@ -75,7 +76,7 @@
 .todo-head {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
 }
 
 .in-progress {
@@ -87,7 +88,7 @@
 .in-progress-head {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
 }
 
 .await-feedback {
@@ -99,7 +100,7 @@
 .await-feedback-head {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
 }
 
 .done {
@@ -111,7 +112,7 @@
 .done-head {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
 }
 
 .main svg {
@@ -190,6 +191,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 230px;
 }
 
 .drag-area-highlight {
@@ -313,28 +315,10 @@ progress[value]::-webkit-progress-value {
   .edit-main {
     flex-direction: column;
   }
-}
-
-@media (max-width: 900px) {
-  .top h1 {
-    font-size: 50px;
-  }
-
-  .input-area {
-    width: 280px;
-    height: 40px;
-  }
-
-  .top-right button {
-    height: 40px;
-    width: 140px;
-  }
-}
-
-@media (max-width: 800px) {
   .drag-area {
     flex-direction: row;
     overflow-x: auto;
+    width: 100%;
   }
 
   .todo {
@@ -380,6 +364,11 @@ progress[value]::-webkit-progress-value {
   .input-area {
     width: 250px;
     height: 40px;
+  }
+
+  .top-right button {
+    height: 40px;
+    width: 140px;
   }
 }
 
