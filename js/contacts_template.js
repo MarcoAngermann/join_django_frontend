@@ -108,7 +108,7 @@ function renderContactDialog(title1, functionNew, btnText) {
         <input class="inputs-contact inputfield-text-style" pattern="[0-9+ ]{6,20}" type="tel" id="phoneContact"
           style="background-image: url(../assets/icons/call_icon.svg)" placeholder="Phone" required/>
         <div class="form-button">
-          <button class="button-guest inputfield-text-style" type="button" onclick="closeDialog()">Delete</button>
+          <button class="button-guest button-text-style" type="button" onclick="closeDialog()">Delete</button>
           <button class="add-contact-button-mobile button-text-style" type="submit">${btnText} <img class="button-images " src="../assets/icons/checkWhite.svg"></button>
         </div>
       </div>

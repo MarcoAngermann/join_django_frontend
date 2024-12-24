@@ -113,7 +113,7 @@ function renderUsers() {
   let content = document.getElementById("users");
   for (let i = 0; i < users.length; i++) {
     const user = users[i];
-    if (user.username == "guest") continue;
+    if (user.id == 1) continue;
     content.innerHTML += renderUsersHTML(user, i);
   }
 }
@@ -202,7 +202,7 @@ function showUsersEmblem() {
   let extraCount = 0;
   for (let i = 0; i < users.length; i++) {
     let user = users[i];
-    if (user.username == "guest") continue;
+    if (user.id == 1) continue;
     let userListChecked = document.getElementById("contactList" + i);
     let checkedUser = document.getElementById(`checkbox${i}`);
     if (checkedUser.checked == true) {

@@ -38,7 +38,7 @@ function getGreeting(isGuest) {
 async function displayGreeting() {
   let currentUser = await getUserLogin();
   console.log(currentUser)
-  let isGuest = currentUser.username == "guest";
+  let isGuest = currentUser.id == 1;
   document.getElementById('greetText').innerHTML = getGreeting(isGuest);
 }
 
@@ -50,7 +50,7 @@ async function displayGreeting() {
 async function displayUser() {
   let currentUser = await getUserLogin();
   let currentUserName = document.getElementById('greetUserName');
-  if (currentUser.username == "guest") {
+  if (currentUser.id == 1) {
     currentUserName.innerHTML = ' ';
   } else {
     currentUserName.innerHTML = currentUser.username;

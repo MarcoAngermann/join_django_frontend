@@ -117,44 +117,48 @@ function focusMobileSidebar() {
   });
 }
 
+async function getUserLogin() {
+  const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+  if (!token) {
+    console.error('No token found in session or local storage.');
+    return null;
+  }
+
+  try {
+    const user = await loadData('user'); // API-Endpoint '/user/'
+    if (user) {
+      console.log('Logged-in user:', user);
+      return user;
+    } else {
+      console.warn('No user found matching the provided token.');
+      return null;
+    }
+  } catch (error) {
+    console.error('Error loading user:', error);
+    return null;
+  }
+}
+
 
 /**
  * Asynchronously retrieves the user object from the 'users' data source based on the user token stored in the session storage.
  *
  * @return {Promise<Object|null>} A Promise that resolves to the user object if found, or null if not found.
  */
-async function getUserLogin() {
-  const token = sessionStorage.getItem('token') || localStorage.getItem('token'); // User ID aus sessionStorage oder localStorage abrufen
-  if (!token) {
-    console.error('No user ID found in session or local storage.');
-    return null;
-  }
-
-  try {
-    const user = await loadData('user'); // Alle Benutzer laden
-    if (user) {
-      console.log('Logged-in user found:', user);
-      return user;
-    } else {
-      console.warn('No user found matching the provided user ID.');
-      return null;
-    }
-  } catch (error) {
-    console.error('Error loading users:', error);
-    return null;
-  }
-}
-
 async function getGuestLogin(event) {
   event.preventDefault();
   try {
-      const response = await postData("guest-login", {}, false);
-      const token = response.token;
-      sessionStorage.setItem("token", token);
-      window.location.href = "./templates/summary.html";
+    const response = await postData("guest-login", {}, false);
+    if (response.token) {
+      sessionStorage.setItem("token", response.token);
+      sessionStorage.setItem("isGuest", "true");
+      location.href = "./templates/summary.html";
+    } else {
+      console.error("Guest Login: No token received");
+    }
   } catch (error) {
-      console.error("Fehler beim Gast-Login:", error);
-      alert("Gast-Login fehlgeschlagen. Bitte versuchen Sie es erneut.");
+    console.error("Fehler beim Gast-Login:", error);
+    alert("Gast-Login fehlgeschlagen. Bitte versuchen Sie es erneut.");
   }
 }
 
@@ -193,11 +197,17 @@ async function getuseremblem() {
  *
  * @return {void} This function does not return anything.
  */
-function userLogOut() {
+async function userLogOut() {
+  const isGuest = sessionStorage.getItem("isGuest");
+  if (isGuest) {
+    await postData("guest-logout", {}, true);
+    sessionStorage.removeItem("isGuest");
+  }
+
   localStorage.removeItem("token");
   sessionStorage.removeItem("token");
   console.log("Token entfernt. Benutzer abgemeldet.");
-  window.location.href = '../index.html';
+  window.location.href = "../index.html";
 }
 
 /**

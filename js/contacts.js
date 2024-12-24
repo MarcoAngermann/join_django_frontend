@@ -24,15 +24,12 @@ async function newContact(event) {
     email: document.getElementById("emailContact").value,
     phone: document.getElementById("phoneContact").value,
     emblem: renderEmblem(nameContact),
-    color: colorRandom()
+    color: colorRandom(),
   };
   contacts.push(newContact);
   await postData("contacts", newContact, true);
   showNewContactDetails(newContact);
   console.log(newContact);
-  window.onload = function() {
-    document.getElementById('meinElement').innerHTML = 'Seite geladen!';
-};
 }
 
 /**
@@ -50,7 +47,7 @@ async function editContact(event, i) {
   contactEdit["emblem"] = renderEmblem(
     document.getElementById("nameContact").value
   );
-  await putData(`contacts/${contactEdit.id}`, contactEdit, true);
+  await patchData(`contacts/${contactEdit.id}`, contactEdit, true);
   closeDialog();
   cleanContactControls();
   renderListContact();
@@ -98,9 +95,7 @@ function renderEmblem(name) {
  * @return {string} The randomly generated color.
  */
 function colorRandom() {
-  return `#${Math.floor(Math.random() * 16777215)
-    .toString(16)
-    .padStart(6, "0")}`;
+  return `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
 }
 
 /**
@@ -310,24 +305,22 @@ function backMobileContListe() {
 function toggleActive(button) {
   const mobileMode = document.getElementById("amobile_nameContact");
   if (!mobileMode) return;
-  button.classList.toggle("active");
-  mobileMode.style.display = button.classList.contains("active")
-    ? "flex"
-    : "none";
+  button.classList.toggle('active');
+  mobileMode.style.display = button.classList.contains('active') ? 'flex' : 'none';
 
   function handleOutsideClick(event) {
     if (!button.contains(event.target) && !mobileMode.contains(event.target)) {
-      button.classList.remove("active");
-      mobileMode.style.display = "none";
-      document.removeEventListener("click", handleOutsideClick);
+      button.classList.remove('active');
+      mobileMode.style.display = 'none';
+      document.removeEventListener('click', handleOutsideClick);
     }
   }
 
-  if (button.classList.contains("active")) {
+  if (button.classList.contains('active')) {
     setTimeout(() => {
-      document.addEventListener("click", handleOutsideClick);
+      document.addEventListener('click', handleOutsideClick);
     }, 0);
   } else {
-    document.removeEventListener("click", handleOutsideClick);
+    document.removeEventListener('click', handleOutsideClick);
   }
 }

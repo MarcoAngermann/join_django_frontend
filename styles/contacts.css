@@ -63,12 +63,6 @@
   line-height: 24px;
 }
 
-.inputfield-text-style {
-  font-weight: 400;
-  font-size: 20px;
-  line-height: 24px;
-}
-
 .button-guest {
   background-color: white;
   color: #2a3647;
@@ -167,10 +161,9 @@
 .contact-details-container {
   display: flex;
   flex-direction: column;
-  width: 100%;
   justify-content: flex-start;
   margin-top: 150px;
-  margin-left: 40px;
+  margin-left: 16px;
   gap: 16px;
   overflow: hidden;
 }
@@ -530,6 +523,11 @@
   cursor: pointer;
 }
 
+.button-mobile-close img:hover {
+  cursor: pointer;
+  scale: 1.1;
+}
+
 .white-arrow {
   display: none;
   background-color: #2a3647;
@@ -556,7 +554,7 @@
 
 @media (max-width: 1345px) {
   .contacts-list {
-    width: 50%;
+    width: 40%;
   }
 
   .contact-details-header p {
@@ -659,6 +657,10 @@
     font-size: 13px;
   }
 
+  .contacts-list {
+    width: 40%;
+  }
+
   .contact-list-container {
     gap: 15px;
   }
@@ -734,9 +736,6 @@
     margin-bottom: 25px;
   }
 
-  .inputfield-text-style {
-    font-size: 18px;
-  }
 }
 
 @media (max-width: 710px) {
@@ -778,6 +777,10 @@
     width: 100%;
   }
 
+  .contacts-details-container {
+    margin-top: 15px;
+  }
+
   .info {
     height: 50px;
   }
@@ -798,9 +801,6 @@
     margin: 12px 0px 12px 0px;
   }
 
-  .inputfield-text-style {
-    font-size: 14px;
-  }
 }
 
 @media (max-width: 395px) {

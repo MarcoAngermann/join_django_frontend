@@ -95,6 +95,21 @@ function showLoginDialog() {
 }
 
 /**
+ * Checks if an email already exists in the users data.
+ * @param {string} email - The email to check.
+ * @return {Promise<boolean>} A promise that resolves to true if the email already exists, false otherwise.
+ */
+async function emailExists(email) {
+  let usersJson = await loadData("users");
+  for (let key in usersJson) {
+    if (usersJson[key].email === email) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
  * Generates a random color from the `colors` array.
  * @return {string} A randomly selected color from the `colors` array.
  */
@@ -197,53 +212,55 @@ function errorLogin() {
 }
 
 /**
- * Logs in the user as a guest and redirects to the summary page.
- * @return {void}
+ * Sets the userId in the session storage to 0 and redirects the user to the summary page.
+ * @param {Event} event - The event object representing the form submission.
+ * @return {void} This function does not return anything.
  */
-async function guestLogin() {
+async function getGuestLogin(event) {
+  event.preventDefault();
   try {
-    // API-Call für Gast-Login
-    const response = await postData('guest-login', {}, false);
-
-    // Token setzen und zur Übersichtsseite navigieren
-    const token = response.token;
-    if (!token) {
-      throw new Error('Kein Token vom Server erhalten.');
-    }
-
-    sessionStorage.setItem('token', token);
-    console.log('Gast-Login erfolgreich, Token gespeichert.');
-
-    // Umleitung zur Übersicht
-    window.location.href = './templates/summary.html';
+      const response = await postData("guest-login", {}, false);
+      const token = response.token;
+      sessionStorage.setItem("token", token);
+      sessionStorage.setItem("isGuest", "true");
+      location.href = "./templates/summary.html";
   } catch (error) {
-    console.error('Gast-Login fehlgeschlagen:', error.message || error);
-    alert('Gast-Login fehlgeschlagen. Bitte versuchen Sie es erneut.');
+      console.error("Fehler beim Gast-Login:", error);
+      alert("Gast-Login fehlgeschlagen. Bitte versuchen Sie es erneut.");
   }
 }
 
 function showPassword() {
-  let image = document.getElementById("password");
-  if (image.type == "password") {
-    image.style.backgroundImage = "url('../assets/icons/visibility.svg')";
-    image.type = "text";
+  const passwordInput = document.getElementById("password");
+  const toggleIcon = document.querySelector("#password + img");
+  
+  if (passwordInput.type === "password") {
+    passwordInput.type = "text";
+    toggleIcon.src = "../assets/icons/visibility_off.svg";
+    toggleIcon.alt = "Hide Password";
   } else {
-    image.style.backgroundImage = "url('../assets/icons/visibility_off.svg')";
-    image.type = "password";
+    passwordInput.type = "password";
+    toggleIcon.src = "../assets/icons/visibility.svg";
+    toggleIcon.alt = "Show Password";
   }
 }
+
 
 /**
  * Function to toggle password visibility.
  */
 function showPasswordConf() {
-  let image = document.getElementById("passwordConfirm");
-  if (image.type == "password") {
-    image.style.backgroundImage = "url('../assets/icons/visibility.svg')";
-    image.type = "text";
+  const passwordInput = document.getElementById("passwordConfirm");
+  const toggleIcon = document.querySelector("#passwordConfirm + img");
+  
+  if (passwordInput.type === "password") {
+    passwordInput.type = "text";
+    toggleIcon.src = "../assets/icons/visibility.svg";
+    toggleIcon.alt = "Hide Password";
   } else {
-    image.style.backgroundImage = "url('../assets/icons/visibility_off.svg')";
-    image.type = "password";
+    passwordInput.type = "password";
+    toggleIcon.src = "../assets/icons/visibility_off.svg";
+    toggleIcon.alt = "Show Password";
   }
 }
 
