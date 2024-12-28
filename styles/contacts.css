@@ -151,11 +151,13 @@
   width: 42px;
   height: 42px;
   padding: 10px;
+  border: 1px solid black;
   border-radius: 50%;
   color: white;
   font-weight: 400;
   justify-content: center;
   text-align: center;
+  text-shadow: 1px 1px 2px rgb(0, 0, 0);
 }
 
 .contact-details-container {
@@ -174,6 +176,12 @@
   display: none;
   cursor: pointer;
   position: relative;
+}
+
+.mobile-returnback img:hover {
+  cursor: pointer;
+  background-color: #d2d2d2;
+  border-radius: 50%;
 }
 
 .contact-details-header {
@@ -251,9 +259,8 @@
 
 .headline-contact {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
-  align-items: center;
-  height: 120px;
 }
 
 .emblem-info-container {
@@ -272,6 +279,7 @@
   text-align: center;
   justify-items: center;
   align-content: center;
+  text-shadow: 1px 1px 2px rgb(0, 0, 0);
 }
 
 .three-dots-button {
@@ -362,6 +370,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.dialog-content {
+  z-index: 1001;
+  position: relative;
 }
 
 .d-none {
@@ -472,7 +485,8 @@
 }
 
 .button-close:hover {
-  background-color: #f0f0f0;
+  cursor: pointer;
+  background-color: #d2d2d2;
   border-radius: 50%;
 }
 
@@ -563,10 +577,6 @@
 
   .contact-details-title {
     font-size: 50px;
-  }
-
-  .headline-contact {
-    height: 80px;
   }
 
   .emblem-info {

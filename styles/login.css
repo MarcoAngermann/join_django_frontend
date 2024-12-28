@@ -114,9 +114,9 @@ body {
   background-color: transparent;
   border: none;
   outline: none;
-  padding: 1px;
-  width: 100%;
+  width: 95%;
   padding: 12px 21px 12px 21px;
+  border-radius: 10px;
 }
 
 .style_InputTypography2 {
