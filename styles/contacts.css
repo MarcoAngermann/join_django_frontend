@@ -269,6 +269,12 @@
   gap: 12px;
 }
 
+.emblem-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .emblem-info {
   width: 120px;
   height: 120px;
@@ -556,6 +562,26 @@
   align-items: center;
 }
 
+.logged-user-container {
+  width: 95%;
+}
+
+.logged-user {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  align-self: center;
+  width: 95%;
+  height: 78px;
+  padding: 15px 24px 15px 24px;
+  gap: 35px;
+}
+
+.current-user-text {
+  font-weight: bold;
+}
+
 @media (max-width: 1425px) {
   .sidebar {
     display: flex !important;
@@ -758,6 +784,10 @@
 
   .mobile-returnback {
     display: flex;
+  }
+  
+  .emblem-info-container {
+    justify-content: space-between;
   }
 
   .mobile-contact {

@@ -28,8 +28,7 @@
         Add new contact
         <img class="icon-contact" src="../assets/icons/person_add_icon.svg" />
       </button>
-      <div id="contactUser"></div>
-      <div class="logged-user" id="loggedUserContainer"></div>
+      <div class="logged-user-container" id="loggedUserContainer"></div>
       <div class="contacts-list-style" id="divList"></div>
     </div>
     <div class="contact-details-container" id="divContactDetails">
@@ -50,16 +49,6 @@
   <div class="animation-container d-none" id="contactCreated">
     <div class="contact-created ">Contact succesfully created</div>
   </div>
-  <div class="mobile-contact">
-    <div class="three-dots-button" onclick="toggleActive(this)">
-      <div class="dot"></div>
-      <div class="dot"></div>
-      <div class="dot"></div>
-    </div>
-    <div class="mobile-dropdown-menu" id="amobile_nameContact" style="display:none">
-      <a class="dflex-align-center" onclick="openDialog(false, ${i})"><img class="img-btns" src="../assets/icons/edit-contacts_icon.svg"> Edit</a>
-      <a class="dflex-align-center" onclick="deleteContact( ${i})"><img class="img-btns" src="../assets/icons/delete_contact_icon.svg"> Delete</a>
-    </div>
 </body>
 
 </html>

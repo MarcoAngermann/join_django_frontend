@@ -3,6 +3,7 @@ let users = [];
 let tasks = [];
 let contacts = [];
 let isTasksArrayLoading = false;
+let profile = {};
 
 /**
  * Asynchronously loads the tasks array from the 'tasks' data source and updates the global 'tasks' array.
@@ -16,9 +17,7 @@ async function tasksArray() {
   isTasksArrayLoading = true;
   try {
     tasks = [];
-
     let tasksJson = await loadData("tasks");
-
     for (let key in tasksJson) {
       let task = tasksJson[key];
       tasks.push(task);
@@ -50,6 +49,11 @@ async function usersArray() {
     let user = usersJson[key];
     users.push(user);
   }
+}
+
+async function loggedUser() {
+  const userProfile = await loadData("user");
+  profile = userProfile;
 }
 
 function dontClose() {
@@ -93,7 +97,6 @@ function focusSidebar() {
     const link = navItem.querySelector("a");
     const linkHref = link.getAttribute("href").replace("./", "");
 
-    // Add "active" class if the link matches the current page, remove otherwise
     if (linkHref === currentPage.replace("?", "")) {
       navItem.classList.add("active");
     } else {
@@ -131,7 +134,7 @@ async function getUserLogin() {
   const localToken = localStorage.getItem("token");
   const isGuest = sessionStorage.getItem("isGuest") === "true";
 
-  let token = sessionToken || localToken; // Standardmäßig Session zuerst
+  let token = sessionToken || localToken; 
 
   if (isGuest && sessionToken) {
     token = sessionToken;
@@ -144,9 +147,9 @@ async function getUserLogin() {
   }
 
   try {
-    const user = await loadData("user"); // API-Endpoint '/user/'
+    const user = await loadData("user"); 
     if (user) {
-      console.log("Eingeloggter Benutzer:", user);
+      // console.log("Eingeloggter Benutzer:", user);
       return user;
     } else {
       console.warn("Kein Benutzer gefunden, der mit diesem Token übereinstimmt.");
@@ -171,7 +174,7 @@ async function getGuestLogin(event) {
     if (response.token) {
       sessionStorage.setItem("token", response.token);
       sessionStorage.setItem("isGuest", "true");
-      localStorage.removeItem("token"); // Stelle sicher, dass kein LocalStorage-Token stört
+      localStorage.removeItem("token");
       location.href = "./templates/summary.html";
     } else {
       console.error("Gast-Login: Kein Token empfangen");
@@ -268,7 +271,7 @@ async function validateTokenOnLoad() {
   try {
     console.log(' Validierung des Tokens beim Seitenstart...');
     const response = await fetch(BASE_URL + "validate-token/", {
-      method: "GET", // Korrekt als GET-Request
+      method: "GET",
       headers: getHeaders(true),
     });
 
@@ -298,7 +301,6 @@ setInterval(async () => {
       return
     }
 
-    // Token und Benutzerstatus prüfen
     const token =
       localStorage.getItem("token") || sessionStorage.getItem("token");
     const isGuest = sessionStorage.getItem("isGuest") === "true";
@@ -311,17 +313,15 @@ setInterval(async () => {
     if (isGuest) {
       console.log("Ping wird als Gastbenutzer gesendet.");
     } else {
-      console.log("Ping wird als normaler Benutzer gesendet.");
+      // console.log("Ping wird als normaler Benutzer gesendet.");
     }
 
-    // Zentraler Ping über postData
     await postData("ping-activity", {}, true);
-    console.log("Activity ping sent");
+    // console.log("Activity ping sent");
   } catch (error) {
     console.error("Fehler beim Activity-Ping:", error.message);
-    // Kein Logout hier! Fehler werden zentral in `postData` behandelt
   }
-}, 0.1 * 60 * 1000); // Alle 6 Sekunden für Testzwecke
+}, 0.1 * 60 * 1000);
 
 /**
  * Benutzer ausloggen und zur Login-Seite weiterleiten
