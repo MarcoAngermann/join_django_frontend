@@ -26,9 +26,10 @@ function renderUsersHTML(user, i) {
  */
 function renderEmblemUsers(user) {
   return /*html*/ `
-        <div class="emblem" style="background-color: ${user.color}" id="${user.id}">
+      <div class="emblem" style="background-color: ${user.color}" id="${user.id}">
         ${user.emblem}
-      </div>  `;
+      </div>  
+      `;
 }
 
 /**
@@ -39,14 +40,14 @@ function renderEmblemUsers(user) {
  */
 function renderCategorysHTML(i) {
   return /*html*/ `
-            <li class="contact-list">
-                  <span for="">
-                      <div class="category-list" tabindex="0" onclick="selectCategory(event, ${i})">
-                        ${categorys[i]}
-                      </div>
-                  </span>
-              </li>
-          `;
+    <li class="contact-list">
+        <span for="">
+          <div class="category-list" tabindex="0" onclick="selectCategory(event, ${i})">
+            ${categorys[i]}
+          </div>
+        </span>
+      </li>
+    `;
 }
 
 /**
@@ -78,18 +79,18 @@ function renderGreyEmblem(remainingCount) {
 function renderSubtaskHTML(i) {
   return /*html*/ `
       <div class="subtask-list" id="mainSubtask-container${i}">
-              <input
-                readonly
-                type="text"
-                id="subtaskList${i}"
-                value="${subtaskList[i].subtasktext}"
-                />
-                <div class="edit-images" id="edit-images${i}">
-                  <img onclick="editSubtask(${i})" id="editSubtask${i}" src="../assets/icons/edit_contacts_icon.svg" alt="">
-                  <div class="edit-seperator"></div>
-                  <img onclick="deleteSubtask(${i})" id="deleteSubtask${i}" src="../assets/icons/delete_contact_icon.svg" alt="">
-                </div>
-              </div>
+        <input
+          readonly
+          type="text"
+          id="subtaskList${i}"
+          value="${subtaskList[i].subtasktext}"
+          />
+        <div class="edit-images" id="edit-images${i}">
+            <img onclick="editSubtask(${i})" id="editSubtask${i}" src="../assets/icons/edit_contacts_icon.svg" alt="">
+            <div class="edit-seperator"></div>
+            <img onclick="deleteSubtask(${i})" id="deleteSubtask${i}" src="../assets/icons/delete_contact_icon.svg" alt="">
+        </div>
+        </div>
           </div>`;
 }
 

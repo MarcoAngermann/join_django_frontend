@@ -29,7 +29,7 @@ function renderUserContainerHTML(profile) {
         ${profile.emblem}
       </div>
       <div class="user-name">
-        <p class="current-user-text">User Account</p>
+        <p class="current-user-text">Current User</p>
         <p>${profile.username}</p>
       </div>
     </div>
@@ -37,15 +37,10 @@ function renderUserContainerHTML(profile) {
 }
 
 /**
- * Renders detailed view of a contact.
- * @param {object} contact - Das Kontaktobjekt.
- * @return {string} Das HTML f端r die Detailansicht.
- */
-/**
- * Renders the detailed view for a profile or contact.
- * @param {object} detail - The detail object (profile or contact).
- * @param {string} type - The type of detail ('profile' or 'contact').
- * @return {string} The HTML for the detail view.
+ * Renders the details of a contact or profile.
+ * @param {object} detail - The contact or profile object to render.
+ * @param {string} type - The type of the contact or profile ('profile' or 'contact').
+ * @return {string} The HTML string representing the contact or profile details.
  */
 function renderDetailsHTML(detail, type) {
   let actions = getDetailActions(type, detail.id);
@@ -54,7 +49,9 @@ function renderDetailsHTML(detail, type) {
     <div class="headline-contact">
       <div class="emblem-info-container">
         <div class="emblem-container">
-          <div class="emblem-info" id="emblem" style="background-color: ${detail.color}">
+          <div class="emblem-info" id="emblem" style="background-color: ${
+            detail.color
+          }">
             ${detail.emblem}
           </div>
           <div class="name-contact">
@@ -103,30 +100,43 @@ function renderDetailsHTML(detail, type) {
  */
 function renderProfileDialog(profile) {
   return /*html*/ `
-  <div class="dialog">
-    <div class="join-add-contact">
-      <button class="button-mobile-close" onclick="closeDialog()">
-        <img class="imgBtns" src="../assets/icons/closeWhite_icon.svg">
-      </button>
-      <img class="icon-join-contact" src="../assets/icons/joinWhite.svg">
-      <div class="contact-details-title">Edit User Profile</div>
-      <div id="textAdd" class="add-text">Update your personal information</div>
-      <div class="seperator-add"></div>
-    </div>
-    <div class="form-edit-style">
-      <form class="add-contact-form" onsubmit="editUser(event, ${profile.id})">
-        <div class="group-contact-input">
-          <input class="inputs-contact inputfield-text-style" type="text" id="username" placeholder="Username" value="${profile.username}" required />
-          <input class="inputs-contact inputfield-text-style" type="email" id="email" placeholder="Email" value="${profile.email}" required />
-          <input class="inputs-contact inputfield-text-style" type="tel" id="phone" placeholder="Phone" value="${profile.phone}" required />
-          <div class="form-button">
-            <button class="button-guest button-text-style" type="button" onclick="closeDialog()">Cancel</button>
-            <button class="add-contact-button-mobile button-text-style" type="submit">Save</button>
+    <div class="dialog">
+      <div class="join-add-contact">
+        <button class="button-mobile-close" onclick="closeDialog()">
+          <img class="imgBtns" src="../assets/icons/closeWhite_icon.svg">
+        </button>
+        <img class="icon-join-contact" src="../assets/icons/joinWhite.svg">
+        <div class="contact-details-title">Edit User Profile</div>
+        <div id="textAdd" class="add-text">Update your personal information</div>
+        <div class="seperator-add"></div>
+      </div>
+      <div class="emblem-info emblem-edit" id="emblem" style="background-color: ${profile.color}">
+        ${profile.emblem}
+      </div>
+      <div class="form-edit-style">
+        <form class="add-contact-form" onsubmit="editProfile(event, ${profile.id})">
+          <div class="group-contact-input">
+            <div class="inputs">
+              <input value="${profile.username}" type="text" id="nameProfile" placeholder="Name" required />
+              <img src="../assets/icons/personInput_icon.svg">
+            </div>
+            <div class="inputs">
+              <input value="${profile.email}" type="email" id="emailProfile" placeholder="Email" required />
+              <img src="../assets/icons/mail_icon.svg">
+            </div>
+            <div class="inputs">
+              <input value="${profile.phone}" type="tel" id="phoneProfile" placeholder="Phone" required />
+              <img src="../assets/icons/call_icon.svg">
+            </div>
+            <div id="errorMessage" class="error-message d-none"></div>
+            <div class="form-button">
+              <button class="button-guest button-text-style" type="button" onclick="closeDialog()">Cancel</button>
+              <button class="add-contact-button-mobile button-text-style" type="submit">Save</button>
+            </div>
           </div>
-        </div>
-      </form>
-    </div>
-  </div>`;
+        </form>
+      </div>
+    </div>`;
 }
 
 /**
@@ -138,56 +148,88 @@ function renderProfileDialog(profile) {
  */
 function renderContactDialog(contact) {
   return /*html*/ `
-  <div class="dialog">
-    <div class="join-add-contact">
-      <button class="button-mobile-close" onclick="closeDialog()">
-        <img class="imgBtns" src="../assets/icons/closeWhite_icon.svg">
-      </button>
-      <img class="icon-join-contact" src="../assets/icons/joinWhite.svg">
-      <div class="contact-details-title">Edit Contact</div>
-      <div id="textAdd" class="add-text">Update personal information</div>
-      <div class="seperator-add"></div>
-    </div>
-    <div class="form-edit-style">
-      <form class="add-contact-form" onsubmit="editContact(event, ${contact.id})">
-        <div class="group-contact-input">
-          <input class="inputs-contact inputfield-text-style" type="text" id="nameContact" placeholder="name" value="${contact.name}" required />
-          <input class="inputs-contact inputfield-text-style" type="email" id="emailContact" placeholder="Email" value="${contact.email}" required />
-          <input class="inputs-contact inputfield-text-style" type="tel" id="phoneContact" placeholder="Phone" value="${contact.phone}" required />
-          <div class="form-button">
-            <button class="button-guest button-text-style" type="button" onclick="closeDialog()">Cancel</button>
-            <button class="add-contact-button-mobile button-text-style" type="submit">Save</button>
+    <div class="dialog">
+      <div class="join-add-contact">
+        <button class="button-mobile-close" onclick="closeDialog()">
+          <img class="imgBtns" src="../assets/icons/closeWhite_icon.svg">
+        </button>
+        <img class="icon-join-contact" src="../assets/icons/joinWhite.svg">
+        <div class="contact-details-title">Edit Contact</div>
+        <div id="textAdd" class="add-text">Update personal information</div>
+        <div class="seperator-add"></div>
+      </div>
+      <div class="emblem-info emblem-edit" id="emblem" style="background-color: ${contact.color}">
+        ${contact.emblem}
+      </div>
+      <div class="form-edit-style">
+        <form class="add-contact-form" onsubmit="editContact(event, ${contact.id})">
+          <div class="group-contact-input">
+            <div class="inputs">
+              <input value="${contact.name}" type="text" id="nameContact" placeholder="Name" required />
+              <img src="../assets/icons/personInput_icon.svg">
+            </div>
+            <div class="inputs">
+              <input value="${contact.email}" type="email" id="emailContact" placeholder="Email" required />
+              <img src="../assets/icons/mail_icon.svg">
+            </div>
+            <div class="inputs">
+              <input value="${contact.phone}" type="tel" id="phoneContact" placeholder="Phone" required />
+              <img src="../assets/icons/call_icon.svg">
+            </div>
+            <div id="errorMessage" class="error-message d-none"></div>
+            <div class="form-button">
+              <button class="button-guest button-text-style" type="button" onclick="closeDialog()">Cancel</button>
+              <button class="add-contact-button-mobile button-text-style" type="submit">Save</button>
+            </div>
           </div>
-        </div>
-      </form>
-    </div>
-  </div>`;
+        </form>
+      </div>
+    </div>`;
 }
 
+/**
+ * Renders a dialog for adding a new contact.
+ * The dialog includes input fields for the contact's name, email, and phone number,
+ * as well as buttons to cancel or submit the form.
+ * @return {string} The HTML string representing the add contact dialog.
+ */
 function renderAddContactDialog() {
   return /*html*/ `
-  <div class="dialog">
-    <div class="join-add-contact">
-      <button class="button-mobile-close" onclick="closeDialog()">
-        <img class="imgBtns" src="../assets/icons/closeWhite_icon.svg">
-      </button>
-      <img class="icon-join-contact" src="../assets/icons/joinWhite.svg">
-      <div class="contact-details-title">Contact</div>
-      <div id="textAdd" class="add-text">Add a new Contact</div>
-      <div class="seperator-add"></div>
-    </div>
-    <div class="form-edit-style">
-      <form class="add-contact-form" onsubmit="newContact(event)">
-        <div class="group-contact-input">
-          <input class="inputs-contact inputfield-text-style" type="text" id="nameContact" placeholder="name" required />
-          <input class="inputs-contact inputfield-text-style" type="email" id="emailContact" placeholder="Email" required />
-          <input class="inputs-contact inputfield-text-style" type="tel" id="phoneContact" placeholder="Phone" required />
-          <div class="form-button">
-            <button class="button-guest button-text-style" type="button" onclick="closeDialog()">Cancel</button>
-            <button class="add-contact-button-mobile button-text-style" type="submit">Save</button>
+    <div class="dialog">
+      <div class="join-add-contact">
+        <button class="button-mobile-close" onclick="closeDialog()">
+          <img class="imgBtns" src="../assets/icons/closeWhite_icon.svg">
+        </button>
+        <img class="icon-join-contact" src="../assets/icons/joinWhite.svg">
+        <div class="contact-details-title">Contact</div>
+        <div id="textAdd" class="add-text">Add a new Contact</div>
+        <div class="seperator-add"></div>
+      </div>
+      <div class="emblem-person">
+        <img class="emblem-icon" src="../assets/icons/person_icon.svg">
+      </div>
+      <div class="form-edit-style">
+        <form class="add-contact-form" onsubmit="newContact(event)">
+          <div class="group-contact-input">
+            <div class="inputs">
+              <input type="text" id="nameContact" placeholder="Name" required />
+              <img src="../assets/icons/personInput_icon.svg">
+            </div>
+            <div class="inputs">
+              <input type="email" id="emailContact" placeholder="Email" required />
+              <img src="../assets/icons/mail_icon.svg">
+            </div>
+            <div class="inputs">
+              <input type="tel" id="phoneContact" placeholder="Phone" required />
+              <img src="../assets/icons/call_icon.svg">
+            </div>
+            <div id="errorMessage" class="error-message d-none"></div>
+            <div class="form-button">
+              <button class="button-guest button-text-style" type="button" onclick="closeDialog()">Cancel</button>
+              <button class="add-contact-button-mobile button-text-style" type="submit">Save</button>
+            </div>
           </div>
-        </div>
-      </form>
-    </div>
-  </div>`;
+        </form>
+      </div>
+    </div>`;
 }

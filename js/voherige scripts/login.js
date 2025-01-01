@@ -147,11 +147,17 @@ function cleanContactControls() {
   document.getElementById("passwordConfirm").value = "";
 }
 
+/**
+ * Handles the login process.
+ * @param {Event} event - The event object that triggered the function.
+ * @return {boolean} Returns false if login fails, otherwise redirects to the summary page.
+ */
 async function doLogin(event) {
   if (event) event.preventDefault();
   let email = document.getElementById("email").value;
   let password = document.getElementById("password").value;
   try {
+    // Hier kein Token (false), dafür Kontext 'user'
     const response = await postData("login", { email, password }, false, 'user');
     const token = response.token;
     const remember = document.getElementById("remember");
@@ -166,28 +172,15 @@ async function doLogin(event) {
   }
 }
 
-/**
- * Stores the given token in either local or session storage, depending on the state of the 'remember' checkbox.
- * @param {string} token - The token to store.
- * @param {HTMLInputElement} remember - The checkbox element that determines where the token is stored.
- * @return {boolean} Always returns false.
- */
 function setToken(token, remember) {
   if (remember.checked) {
     localStorage.setItem("token", token);
+    console.log("Token gespeichert in Local Storage.");
   } else {
     sessionStorage.setItem("token", token);
+    console.log("Token gespeichert in Session Storage.");
   }
   return false;
-}
-
-/**
- * Displays a login error message on the webpage.
- */
-function showLoginError() {
-  let loginErrorElement = document.getElementById("loginErrorCheck");
-  loginErrorElement.style.display = "flex";
-  loginErrorElement.innerText = "* user does not exist or wrong password";
 }
 
 /**
@@ -221,11 +214,6 @@ async function getGuestLogin(event) {
   }
 }
 
-/**
- * Toggles the type of the password input field between "password" and "text" depending
- * on its current state. Also updates the icon next to the field to represent the
- * current state.
- */
 function showPassword() {
   const passwordInput = document.getElementById("password");
   const toggleIcon = document.querySelector("#password + img");

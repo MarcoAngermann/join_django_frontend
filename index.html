@@ -32,9 +32,8 @@
           <a onclick="signUp()" class="btn-login style_BtnTypography2" type="button">Sign up</a>
         </div>
       </div>
-      <div id="errorMessageContainer" class="error-message-container dnone">
-        <div id="loginError" class="error-login-style error-login ">Login failed: </br>Password or Email incorrect</div>
-      </div>
+      <div id="errorMessage" class="error-message d-none"></div>
+
 
       <div id="mainLoginContainer" class="main-login-container">
         <form id="formLogin" class="form-login" onsubmit="return doLogin(event)">
@@ -54,9 +53,7 @@
                 onclick="showPassword()" 
                 alt="Show Password" />
             </div>
-            <div class="confirm-error">
-              <span id="loginErrorCheck" class="pw-error-check"></span>
-            </div>
+            <div id="divError" class="error d-none"></div>
           </div>
 
           <div class="box-remember style_InputTypography2">

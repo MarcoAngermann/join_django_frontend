@@ -1,3 +1,4 @@
+let currentSelectedContactId = null;
 /**
  * Initializes the contact functionality by including HTML, loading contacts data asynchronously,
  * and rendering the list of contacts.
@@ -57,9 +58,11 @@ function renderContactsWithoutUser(listContact) {
 }
 
 /**
- * Creates a new contact and adds it to the contacts array.
- * @param {Event} event - The event object for the form submission.
- * @return {Promise<void>} - A promise that resolves when the new contact is added and saved to the server.
+ * Creates a new contact by retrieving the input values from the dialog, creating a new contact object,
+ * saving it to the server, adding it to the contacts array, rendering the list of contacts, closing the dialog,
+ * showing the details of the new contact, and cleaning the input fields.
+ * @param {Event} event - The event object triggered by the form submission.
+ * @return {Promise<void>} A promise that resolves when the creation is complete.
  */
 async function newContact(event) {
   event.preventDefault();
@@ -74,7 +77,12 @@ async function newContact(event) {
   };
 
   try {
-    let saveContact = await postData("contacts", newContact, true, 'contact');
+    let saveContact = await postData("contacts", newContact, true);
+
+    if (!saveContact) {
+      throw new Error('Fehler beim Erstellen des Kontakts oder keine Antwort erhalten.');
+    }
+
     contacts.push(saveContact);
     sortContacts();
     await renderListContact();
@@ -82,7 +90,8 @@ async function newContact(event) {
     showDetails(saveContact.id, "contact");
     cleanContactControls();
   } catch (error) {
-    console.error("Fehler beim Erstellen des Kontakts:", error);
+    console.error('Fehler beim Erstellen des Kontakts:', error);
+    showError(error);
   }
 }
 
@@ -95,21 +104,19 @@ async function editContact(event, id) {
   event.preventDefault();
   const contactEdit = contacts.find((c) => c.id === id);
 
-  contactEdit.id = id;
   contactEdit.name = document.getElementById("nameContact").value;
   contactEdit.email = document.getElementById("emailContact").value;
   contactEdit.phone = document.getElementById("phoneContact").value;
   contactEdit.emblem = renderEmblem(contactEdit.name);
-  
   try {
-    await putData(`contacts/${contactEdit.id}`, contactEdit, 'contact');
+    await putData(`contacts/${contactEdit.id}`, contactEdit, true);
     sortContacts();
     renderListContact();
     showDetails(contactEdit.id, "contact");
     closeDialog();
     cleanContactControls();
   } catch (error) {
-    console.error("Fehler beim Bearbeiten des Kontakts:", error);
+    showError(error);
   }
 }
 
@@ -130,14 +137,13 @@ async function editProfile(event) {
   };
 
   try {
-    await putData(`user`, updatedUser, 'user');
+    await putData(`user`, updatedUser, true); 
     sortContacts();
-    renderListContact();
     await loggedUser();
     showDetails(profile.id, "profile");
     closeDialog();
   } catch (error) {
-    console.error("Fehler beim Bearbeiten des Kontakts:", error.message);
+    showError(error);
   }
 }
 
@@ -148,10 +154,10 @@ async function editProfile(event) {
 async function deleteProfile(id) {
   if (id !== profile.id) return;
   try {
-    await deleteData(`user`, true); // Pfad angepasst für den aktuellen User
+    await deleteData(`user`, true); 
     window.location.href = "../index.html";
   } catch (error) {
-    console.error("Fehler beim Bearbeiten des Kontakts:", error.message);
+    console.error("Fehler beim Löschen des Benutzers:", error);
   }
 }
 
@@ -169,7 +175,6 @@ async function deleteContact(id) {
     renderListContact();
   } catch (error) {
     console.error("Fehler beim Löschen des Kontakts:", error);
-    showError(error.message); 
   }
   renderListContact();
   sortContacts();
@@ -196,15 +201,6 @@ function renderEmblem(name) {
   return capital;
 }
 
-function showError(error) {
-  let divError = document.getElementById("divError");
-  divError.classList.remove("d-none");
-
-  divError.innerHTML = `
-      <p>${error}.</p>
-  `;
-}
-
 /**
  * Generates a random color from the given array of colors.
  * @return {string} The randomly generated color.
@@ -228,20 +224,65 @@ function sortContacts() {
   });
 }
 
+
 /**
- * Displays detailed information about a specific contact by ID.
- * @param {number} id - The unique ID of the contact.
- * @return {void}
+ * Shows or hides the details dialog based on the given id and type.
+ * @param {number} id - The id of the contact to show or hide.
+ * @param {string} type - The type of the contact to show or hide.
+ * @return {void} This function does not return anything.
  */
 function showDetails(id, type) {
   let dialog = document.getElementById("divDetails");
-  dialog.classList.remove("d-none");
-  removeSelectedClassFromAllContacts();
 
-  if (profile.id == id && type == "profile") {
+  if (currentSelectedContactId === id) {
+    hideDetails(dialog);
+  } else {
+    removeSelectedClassFromAllContacts(); 
+    currentSelectedContactId = id; 
+    showDetailDialog(dialog); 
+    handleContactDetails(id, type); 
+  }
+}
+
+/**
+ * Zeigt den Detail-Dialog an, indem die Klasse 'd-none' entfernt
+ * und die Klasse 'move-left' hinzugefügt wird. Nach 250ms wird die
+ * Klasse 'move-left' wieder entfernt.
+ * @param {HTMLElement} dialog - Das HTMLElement, dass den Detail-Dialog darstellt.
+ */
+function showDetailDialog(dialog) {
+  dialog.classList.remove("d-none");
+  dialog.classList.add("move-left");
+  setTimeout(() => dialog.classList.remove("move-left"), 250);
+}
+
+/**
+ * Versteckt den Detail-Dialog mit Animation
+ * und entfernt die selected-Class von allen Kontakten
+ * und setzt currentSelectedContactId auf null.
+ * @param {HTMLElement} dialog - Das HTMLElement, dass den Detail-Dialog darstellt.
+ */
+function hideDetails(dialog) {
+  dialog.classList.add("move-right");
+  setTimeout(() => {
+    dialog.classList.add("d-none");
+    dialog.classList.remove("move-right");
+    removeSelectedClassFromAllContacts();  
+    currentSelectedContactId = null;  
+  }, 250);
+}
+
+/**
+ * Handles showing the details of a contact or profile.
+ * @param {number} id - The id of the contact or profile.
+ * @param {string} type - The type of the contact or profile ('profile' or 'contact').
+ * @return {void} This function does not return anything.
+ */
+function handleContactDetails(id, type) {
+  if (profile.id == id && type === "profile") {
     displayContactDetails(profile, type);
     addSelectedClassToCurrentContact(id, "profile");
-  } else if (type == "contact") {
+  } else if (type === "contact") {
     let contact = contacts.find((c) => c.id === id);
     if (contact) {
       displayContactDetails(contact, type);
@@ -251,14 +292,12 @@ function showDetails(id, type) {
 }
 
 /**
- * Removes the 'contact-list-container-selected' class from all contact list containers.
- * This function ensures that no contact list container is marked as selected.
- * @return {void} This function does not return anything.
+ * Removes the 'contact-list-container-selected' class from all contact containers and the logged user container.
+ * This is used to unselect all contacts when the details dialog is closed.
+ * @return {void} This function does not return a value.
  */
 function removeSelectedClassFromAllContacts() {
-  let allContactContainers = document.querySelectorAll(
-    ".contact-list-container"
-  );
+  let allContactContainers = document.querySelectorAll(".contact-list-container");
   for (let i = 0; i < allContactContainers.length; i++) {
     let container = allContactContainers[i];
     container.classList.remove("contact-list-container-selected");
@@ -268,9 +307,10 @@ function removeSelectedClassFromAllContacts() {
 }
 
 /**
- * Adds the 'contact-list-container-selected' class to the currently selected contact.
- * @param {number} id - The unique ID of the contact.
- * @return {void}
+ * Adds the 'contact-list-container-selected' class to the element with the given id and type.
+ * @param {number} id - The id of the contact or profile.
+ * @param {string} type - The type ('profile' or 'contact').
+ * @return {Promise<void>} A promise that resolves when the class has been added.
  */
 async function addSelectedClassToCurrentContact(id, type) {
   if (type === "profile") {
@@ -321,24 +361,35 @@ function getDetailActions(type, id) {
 }
 
 /**
- * Opens a dialog to add a new contact.
+ * Animates the dialog in with a slide-in animation, and renders the
+ * content of the add contact dialog.
  */
-function openAddContactDialog() {
+function slideIn() {
   let dialog = document.getElementById("dialog");
   let dialogContent = document.getElementById("dialogContent");
+  dialog.classList.remove("d-none");
+  dialogContent.classList.add("move-left");
+
+  setTimeout(() => {
+    dialogContent.classList.remove("move-left");
+  }, 250);
 
   dialog.classList.remove("d-none");
   dialogContent.innerHTML = renderAddContactDialog();
 }
 
 /**
+ * Opens a dialog to add a new contact.
+ */
+function openAddContactDialog() {
+  slideIn();
+}
+
+/**
  * Opens a dialog to edit the user profile.
  */
 function openProfileDialog() {
-  let dialog = document.getElementById("dialog");
-  let dialogContent = document.getElementById("dialogContent");
-
-  dialog.classList.remove("d-none");
+  slideIn();
   dialogContent.innerHTML = renderProfileDialog(profile);
 }
 
@@ -347,17 +398,12 @@ function openProfileDialog() {
  * @param {number} contactId - The ID of the contact to edit.
  */
 function openEditContactDialog(id) {
-  let dialog = document.getElementById("dialog");
-  let dialogContent = document.getElementById("dialogContent");
-
+  slideIn();
   const contact = contacts.find((c) => c.id === id);
-
   if (!contact) {
-    console.error(`Contact with ID ${contactId} not found.`);
+    console.error(`Contact with ID ${id} not found.`);
     return;
   }
-
-  dialog.classList.remove("d-none");
   dialogContent.innerHTML = renderContactDialog(contact);
 }
 
@@ -502,11 +548,22 @@ function toggleActive(button) {
 }
 
 /**
- * Closes the dialog box when clicking outside.
+ * Closes a dialog with the specified ID.
+ * If no dialogId is given, it defaults to "dialog".
+ * The dialog is closed by adding the 'move-right' class to the dialog content,
+ * and then 250ms later, the 'd-none' class is added to the dialog to hide it,
+ * and the 'move-right' class is removed from the dialog content.
+ * @param {string} dialogId - The ID of the dialog to close.
+ * @return {void} This function does not return a value.
  */
-function closeDialog() {
-  let dialog = document.getElementById("dialog");
+function closeDialog(dialogId = "dialog") {
+  let dialogContent = document.getElementById("dialogContent");
+  let dialog = document.getElementById(dialogId);
   if (dialog) {
-    dialog.classList.add("d-none");
+    dialogContent.classList.add("move-right");
+    setTimeout(() => {
+      dialog.classList.add("d-none");
+      dialogContent.classList.remove("move-right");
+    }, 250);
   }
 }

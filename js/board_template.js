@@ -195,7 +195,9 @@ function renderBigSubtasksHTML(cardId, subtask, j) {
         <label for="checkbox${j}">
             <li class="big-subtasklist">
                 <input class="big-card-checkbox" onclick="checkedSubtask(${cardId}, ${j})" type="checkbox"  
-                ${subtask.checked ? "checked" : ""} id="checkbox${j}" data-userid="${j}">
+                ${
+                  subtask.checked ? "checked" : ""
+                } id="checkbox${j}" data-userid="${j}">
                 <div class="contactname">${subtask.subtasktext}</div>
             </li>
         </label>`;

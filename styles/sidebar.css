@@ -40,14 +40,14 @@
 .a-nav {
   display: flex;
   justify-content: center;
-
+  border-radius: 10px;
   height: 46px;
   gap: 12px;
 }
 
 .a-nav:hover {
   cursor: pointer;
-  color: #ffffff;
+  color: white;
   background-color: rgb(9, 25, 49, 1);
 }
 
@@ -60,6 +60,10 @@
   font-weight: 400;
   gap: 8px;
   font-size: 16px;
+}
+
+.a-nav a:hover {
+  color: #29abe2;
 }
 
 .active {

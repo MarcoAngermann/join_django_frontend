@@ -7,6 +7,7 @@ let profile = {};
 
 /**
  * Asynchronously loads the tasks array from the 'tasks' data source and updates the global 'tasks' array.
+ *
  * @return {Promise<void>} A Promise that resolves when the tasks array is updated.
  */
 async function tasksArray() {
@@ -39,6 +40,7 @@ async function contactsArray() {
 
 /**
  * Asynchronously loads the users array from the 'users' data source and updates the global 'users' array.
+ *
  * @return {Promise<void>} A Promise that resolves when the users array is updated.
  */
 async function usersArray() {
@@ -49,26 +51,18 @@ async function usersArray() {
   }
 }
 
-/**
- * Asynchronously loads the currently logged-in user's data from the 'user' data source and updates the global 'profile' object.
- * @return {Promise<void>} A Promise that resolves after loading the user data and updating the global 'profile' object.
- */
 async function loggedUser() {
   const userProfile = await loadData("user");
   profile = userProfile;
 }
 
-/**
- * Prevents the default event propagation by calling stopPropagation on the global 'event' object.
- * This function is intended to be used as an event handler for elements that should not close when clicked.
- * @return {void} This function does not return a value.
- */
 function dontClose() {
   event.stopPropagation();
 }
 
 /**
  * Asynchronously includes HTML content in elements with the attribute 'w3-include-html'.
+ *
  * @return {Promise<void>} A Promise that resolves after including the HTML content.
  */
 async function includeHTML() {
@@ -91,6 +85,7 @@ async function includeHTML() {
 
 /**
  * Focuses on the sidebar link that corresponds to the current page.
+ *
  * @return {undefined} This function does not return a value.
  */
 function focusSidebar() {
@@ -112,6 +107,7 @@ function focusSidebar() {
 
 /**
  * Focuses on the mobile sidebar link that corresponds to the current page.
+ *
  * @return {undefined} This function does not return a value.
  */
 function focusMobileSidebar() {
@@ -130,10 +126,9 @@ function focusMobileSidebar() {
 
 /**
  * Retrieves the user object from the 'users' data source based on the user token stored in the session or local storage.
- * If no token is found, redirects to the login page.
- * If the token does not correspond to a user, returns null.
  * @return {Promise<Object|null>} A Promise that resolves to the user object if found, or null if not found.
  */
+
 async function getUserLogin() {
   const sessionToken = sessionStorage.getItem("token");
   const localToken = localStorage.getItem("token");
@@ -154,6 +149,7 @@ async function getUserLogin() {
   try {
     const user = await loadData("user"); 
     if (user) {
+      // console.log("Eingeloggter Benutzer:", user);
       return user;
     } else {
       console.warn("Kein Benutzer gefunden, der mit diesem Token übereinstimmt.");
@@ -167,6 +163,7 @@ async function getUserLogin() {
 
 /**
  * Asynchronously retrieves the user object from the 'users' data source based on the user token stored in the session storage.
+ *
  * @return {Promise<Object|null>} A Promise that resolves to the user object if found, or null if not found.
  */
 async function getGuestLogin(event) {
@@ -190,6 +187,22 @@ async function getGuestLogin(event) {
 
 /**
  * Asynchronously retrieves the current user's emblem and updates the 'emblemUser' element with it.
+ *
+ * @return {Promise<void>} A Promise that resolves when the emblem has been updated.
+ */
+async function getuseremblem() {
+  let currentUser = await getUserLogin();
+  if (currentUser != null) {
+    let emblemUser = document.getElementById("emblemUser");
+    emblemUser.innerHTML = currentUser.emblem;
+  } else {
+    emblemUser.innerHTML = "";
+  }
+}
+
+/**
+ * Asynchronously retrieves the current user's emblem and updates the 'emblemUser' element with it.
+ *
  * @return {Promise<void>} A Promise that resolves when the emblem has been updated.
  */
 async function getuseremblem() {
@@ -204,6 +217,7 @@ async function getuseremblem() {
 
 /**
  * Logs out the current user by removing the user ID from session storage and redirecting to the index page.
+ *
  * @return {void} This function does not return anything.
  */
 async function userLogOut() {
@@ -222,6 +236,7 @@ async function userLogOut() {
 /**
  * Asynchronously opens the sidebar rules for the current user. If the user is not logged in,
  * the sidebar and mobile sidebar are hidden, and the back button is set to redirect to the index page.
+ *
  * @return {Promise<void>} A Promise that resolves when the sidebar rules are opened.
  */
 async function openSidebarRules() {
@@ -274,44 +289,42 @@ async function validateTokenOnLoad() {
   }
 }
 
-// setInterval(async () => {
-//   try {
-//     const currentPage = window.location.pathname.split("/").pop();
-//     if (["index.html", "signUp.html"].includes(currentPage)) {
-//       for (let i = 0; i < 1000; i++) {
-//         clearInterval(i);
-//       }
-//       console.warn("Alle setInterval-Instanzen wurden gestoppt.");
-//       return
-//     }
+setInterval(async () => {
+  try {
+    // Überprüfen, ob wir auf der index.html oder signUp.html sind
+    const currentPage = window.location.pathname.split("/").pop();
+    if (["index.html", "signUp.html"].includes(currentPage)) {
+      for (let i = 0; i < 1000; i++) {
+        clearInterval(i);
+      }
+      console.warn("Alle setInterval-Instanzen wurden gestoppt.");
+      return
+    }
 
-//     const token =
-//       localStorage.getItem("token") || sessionStorage.getItem("token");
-//     const isGuest = sessionStorage.getItem("isGuest") === "true";
+    const token =
+      localStorage.getItem("token") || sessionStorage.getItem("token");
+    const isGuest = sessionStorage.getItem("isGuest") === "true";
 
-//     if (!token) {
-//       console.warn("Kein Token gefunden. Ping wird nicht gesendet.");
-//       return;
-//     }
+    if (!token) {
+      console.warn("Kein Token gefunden. Ping wird nicht gesendet.");
+      return;
+    }
 
-//     if (isGuest) {
-//       // console.log("Ping wird als Gastbenutzer gesendet.");
-//     } else {
-//       // console.log("Ping wird als normaler Benutzer gesendet.");
-//     }
+    if (isGuest) {
+      console.log("Ping wird als Gastbenutzer gesendet.");
+    } else {
+      // console.log("Ping wird als normaler Benutzer gesendet.");
+    }
 
-//     await postData("ping-activity", {}, true);
-//     // console.log("Activity ping sent");
-//   } catch (error) {
-//     console.error("Fehler beim Activity-Ping:", error.message);
-//   }
-// }, 0.1 * 60 * 1000);
+    await postData("ping-activity", {}, true);
+    // console.log("Activity ping sent");
+  } catch (error) {
+    console.error("Fehler beim Activity-Ping:", error.message);
+  }
+}, 0.1 * 60 * 1000);
 
 /**
- * Logs out the current user by removing any stored token and guest status from local and session storage, 
- * and redirects to the index page. This function is typically called when a user's token is invalid or expired.
- *
- * @return {void} This function does not return anything.
+ * Benutzer ausloggen und zur Login-Seite weiterleiten
  */
 function logout() {
   console.warn("Token ungültig. Benutzer wird ausgeloggt.");
@@ -325,13 +338,27 @@ document.addEventListener("DOMContentLoaded", async () => {
   await validateTokenOnLoad();
 });
 
+//Intervallstopper
+/*
+for (let i = 0; i < 1000; i++) {
+  clearInterval(i);
+}
+console.warn('Alle setInterval-Instanzen wurden gestoppt.');
+*/
+
+/**
+ * Zeigt benutzerfreundliche Fehlermeldungen im UI an.
+ * @param {Object|string} error - Das Fehlerobjekt oder eine Fehlernachricht als String.
+ * @param {string} context - Fehlerkontext ('user', 'contact', etc.).
+ */
 function showError(error, context = 'general') {
-  const divError = document.getElementById("errorMessage");
+  const divError = document.getElementById("divError");
   divError.classList.remove("d-none");
-  divError.innerHTML = "";
+  divError.innerHTML = ""; // Reset der Fehlermeldungen
 
   console.warn("Debugging Error Object:", error, "Context:", context);
 
+  // 🔹 Direkte Fehlermeldung als String anzeigen
   if (typeof error === "string") {
     divError.innerHTML = `<p>${error}</p>`;
     return;
@@ -339,33 +366,41 @@ function showError(error, context = 'general') {
 
   let errorMessages = [];
 
+  // 🔹 Fehler für Benutzer (User)
   if (context === 'user') {
     if (error?.email) errorMessages.push(error.email[0]);
     if (error?.username) errorMessages.push(error.username[0]);
     if (error?.phone) errorMessages.push(error.phone[0]);
   }
 
+  // 🔹 Fehler für Kontakt (Contact)
   if (context === 'contact') {
     if (error?.email) errorMessages.push(error.email[0]);
     if (error?.name) errorMessages.push(error.name[0]);
     if (error?.phone) errorMessages.push(error.phone[0]);
   }
 
+  // 🔹 Allgemeine Fehler (non_field_errors)
   if (error?.non_field_errors) {
     errorMessages.push(error.non_field_errors[0]);
   }
 
+  // 🔹 Detail-Fehler (z.B. Server-Fehler)
   if (error?.detail) {
     errorMessages.push(error.detail);
   }
 
+  // 🔹 Anzeige von Fehlern
   if (errorMessages.length === 1) {
+    // Ein einzelner Fehler → Direkt anzeigen
     divError.innerHTML = `<p>*${errorMessages[0]}</p>`;
   } else if (errorMessages.length > 1) {
+    // Mehrere Fehler → Allgemeine Nachricht + Dropdown
     divError.innerHTML = `
         ${errorMessages.map(msg => `<p>*${msg}</p>`).join('')}
     `;
   } else {
+    // Fallback
     divError.innerHTML = `<p>Something went wrong. Please try again.</p>`;
   }
 }
