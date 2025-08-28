@@ -1,10 +1,8 @@
 /**
  * Renders a contact list item.
- * @param {object} contact - The contact object to render.
- * @return {string} The HTML string representing the contact list item.
  */
 function renderListContactHTML(contact, i) {
-  return /*html*/ `
+    return /*html*/ `
     <div id="contact-${contact.id}" class="contact-list-container ${i}" onclick="showDetails(${contact.id}, 'contact')">
       <div class="contact-emblem" style="background-color: ${contact.color}">
         ${contact.emblem}
@@ -19,11 +17,9 @@ function renderListContactHTML(contact, i) {
 
 /**
  * Renders the HTML for the user container, which displays the user's emblem and name.
- * @param {object} user - The user object containing the user's information.
- * @return {string} The HTML string representing the user container.
  */
 function renderUserContainerHTML(profile) {
-  return /*html*/ `
+    return /*html*/ `
     <div class="logged-user" onclick="showDetails(${profile.id}, 'profile')">
       <div class="contact-emblem" style="background-color: ${profile.color}">
         ${profile.emblem}
@@ -38,19 +34,16 @@ function renderUserContainerHTML(profile) {
 
 /**
  * Renders the details of a contact or profile.
- * @param {object} detail - The contact or profile object to render.
- * @param {string} type - The type of the contact or profile ('profile' or 'contact').
- * @return {string} The HTML string representing the contact or profile details.
  */
 function renderDetailsHTML(detail, type) {
-  let actions = getDetailActions(type, detail.id);
+    let actions = getDetailActions(type, detail.id);
 
-  return /*html*/ `
+    return /*html*/ `
     <div class="headline-contact">
       <div class="emblem-info-container">
         <div class="emblem-container">
           <div class="emblem-info" id="emblem" style="background-color: ${
-            detail.color
+              detail.color
           }">
             ${detail.emblem}
           </div>
@@ -95,11 +88,9 @@ function renderDetailsHTML(detail, type) {
 
 /**
  * Renders a dialog for editing the user profile.
- * @param {object} user - The user object.
- * @return {string} HTML for the user dialog.
  */
 function renderProfileDialog(profile) {
-  return /*html*/ `
+    return /*html*/ `
     <div class="dialog">
       <div class="join-add-contact">
         <button class="button-mobile-close" onclick="closeDialog()">
@@ -141,13 +132,9 @@ function renderProfileDialog(profile) {
 
 /**
  * Renders a contact dialog for adding or editing a contact.
- * @param {string} mode - 'add' oder 'edit'.
- * @param {object} [contact] - Das Kontaktobjekt (nur für 'edit' Modus).
- * @param {number} [index] - Der Index des Kontakts (nur für 'edit' Modus).
- * @return {string} Das HTML für den Dialog.
  */
 function renderContactDialog(contact) {
-  return /*html*/ `
+    return /*html*/ `
     <div class="dialog">
       <div class="join-add-contact">
         <button class="button-mobile-close" onclick="closeDialog()">
@@ -191,10 +178,9 @@ function renderContactDialog(contact) {
  * Renders a dialog for adding a new contact.
  * The dialog includes input fields for the contact's name, email, and phone number,
  * as well as buttons to cancel or submit the form.
- * @return {string} The HTML string representing the add contact dialog.
  */
 function renderAddContactDialog() {
-  return /*html*/ `
+    return /*html*/ `
     <div class="dialog">
       <div class="join-add-contact">
         <button class="button-mobile-close" onclick="closeDialog()">
